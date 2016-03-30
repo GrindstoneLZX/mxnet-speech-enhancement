@@ -100,8 +100,8 @@ class multi_thread_iterator(mx.io.DataIter):
             #index = self.chunk_indices[self.chunk_begin:self.chunk_begin + self.chunk_size]
             self.load_chunk_pair[out_id] = load_chunk(index, file_name, splice)
         
-        self.load_chunk_thread = [threading.Thread(target=load_chunk_func, args=(self, 0, self.input_file_name, self.splice,)), \
-                                  threading.Thread(target=load_chunk_func, args=(self, 1, self.label_file_name, 0,))]
+#        self.load_chunk_thread = [threading.Thread(target=load_chunk_func, args=(self, 0, self.input_file_name, self.splice,)), \
+#                                  threading.Thread(target=load_chunk_func, args=(self, 1, self.label_file_name, 0,))]
         
         def prefetch_func(self):
             while True:
@@ -177,8 +177,20 @@ class multi_thread_iterator(mx.io.DataIter):
     def __iter__(self):
         return self
         
-    def __del__(self):
-        self.file.close()
+#    def __del__(self):
+#        self.file.close()
 
     
+if __name__ == '__main__':
+    import time
+    input_file_name = '/home/zxlee/Documents/SpeechEnhance_xuyong/train1_noisy_spec.h5'
+    label_file_name = '/home/zxlee/Documents/SpeechEnhance_xuyong/train1_clean_spec.h5'
+    iterator = multi_thread_iterator(input_file_name, label_file_name, shuffle=True)
+    iterator.reset()
+    
+    tic = time.time()
+    for i, batch in enumerate(iterator):
+        data = batch.data
+        print (i, data[0].shape)
 
+    print 'escape time: %.3f' % (time.time() - tic)
